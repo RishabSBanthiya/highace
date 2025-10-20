@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import { createBuyInTransaction } from '../utils/solana';
+import { createBuyInTransaction, connection } from '../utils/solana';
 import { FIXED_BUY_IN } from '../config';
 
 interface BuyInModalProps {
@@ -19,12 +19,12 @@ export default function BuyInModal({
   onBuyInComplete,
   onCancel,
 }: BuyInModalProps) {
-  const { publicKey, signTransaction } = useWallet();
+  const { publicKey, sendTransaction } = useWallet();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleBuyIn = async () => {
-    if (!publicKey || !signTransaction) {
+    if (!publicKey || !sendTransaction) {
       setError('Wallet not connected');
       return;
     }
@@ -41,11 +41,14 @@ export default function BuyInModal({
         roomId
       );
 
-      const signed = await signTransaction(transaction);
-      const signature = await (window as any).solana.sendTransaction(signed, {
+      // Use wallet adapter's sendTransaction method
+      const signature = await sendTransaction(transaction, connection, {
         skipPreflight: false,
         preflightCommitment: 'confirmed',
       });
+
+      // Wait for confirmation
+      await connection.confirmTransaction(signature, 'confirmed');
 
       onBuyInComplete(signature);
     } catch (err: any) {
