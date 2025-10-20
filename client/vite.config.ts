@@ -8,6 +8,21 @@ export default defineConfig({
   },
   define: {
     'process.env': {},
+    global: 'globalThis',
+  },
+  resolve: {
+    alias: {
+      buffer: 'buffer/',
+      process: 'process/browser',
+    },
+  },
+  optimizeDeps: {
+    include: ['buffer', 'process'],
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
   },
 })
 
