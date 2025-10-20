@@ -167,13 +167,20 @@ async function handleBuyIn(ws: WebSocket, payload: any) {
     return sendError(ws, 'Missing required fields');
   }
 
-  // Verify transaction
-  const isValid = await verifyBuyInTransaction(
-    transaction_signature,
-    wallet_address,
-    FIXED_BUY_IN,
-    room_id
-  );
+  // TEMPORARY: Test mode bypass
+  let isValid = false;
+  if (transaction_signature.startsWith('TEST_MODE_')) {
+    console.log('⚠️ TEST MODE: Bypassing buy-in transaction verification');
+    isValid = true;
+  } else {
+    // Verify transaction
+    isValid = await verifyBuyInTransaction(
+      transaction_signature,
+      wallet_address,
+      FIXED_BUY_IN,
+      room_id
+    );
+  }
 
   if (!isValid) {
     return sendError(ws, 'Invalid buy-in transaction');

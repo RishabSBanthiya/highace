@@ -66,6 +66,14 @@ export default function BuyInModal({
     }
   };
 
+  // TEMPORARY: Test mode bypass
+  const handleTestBypass = () => {
+    console.log('⚠️ TEST MODE: Bypassing buy-in transaction');
+    // Use a fake signature for testing
+    const fakeSignature = 'TEST_MODE_' + Date.now() + '_' + Math.random().toString(36).substring(7);
+    onBuyInComplete(fakeSignature);
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-gray-900 p-8 rounded-lg max-w-md w-full">
@@ -89,21 +97,34 @@ export default function BuyInModal({
           </div>
         )}
 
-        <div className="flex gap-3">
+        <div className="space-y-3">
+          <div className="flex gap-3">
+            <button
+              onClick={onCancel}
+              disabled={loading}
+              className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded font-semibold transition disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleBuyIn}
+              disabled={loading}
+              className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 rounded font-semibold transition disabled:opacity-50"
+            >
+              {loading ? 'Processing...' : 'Buy In'}
+            </button>
+          </div>
+          
+          {/* TEMPORARY: Test mode bypass button */}
           <button
-            onClick={onCancel}
-            disabled={loading}
-            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded font-semibold transition disabled:opacity-50"
+            onClick={handleTestBypass}
+            className="w-full px-6 py-2 bg-yellow-600 hover:bg-yellow-700 rounded font-semibold transition text-sm border-2 border-yellow-500"
           >
-            Cancel
+            ⚠️ Skip Buy-In (Test Mode)
           </button>
-          <button
-            onClick={handleBuyIn}
-            disabled={loading}
-            className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 rounded font-semibold transition disabled:opacity-50"
-          >
-            {loading ? 'Processing...' : 'Buy In'}
-          </button>
+          <p className="text-xs text-gray-500 text-center">
+            Test mode: Bypasses blockchain transaction
+          </p>
         </div>
       </div>
     </div>
