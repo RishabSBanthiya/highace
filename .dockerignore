@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+.git
+.env
+*.log
+*.db
+*.sqlite
+.DS_Store
+client
+

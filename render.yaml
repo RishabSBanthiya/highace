@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: highace-poker-server
+    env: node
+    region: oregon
+    buildCommand: npm install && npm run build --workspace=server
+    startCommand: npm run start --workspace=server
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: SOLANA_RPC_URL
+        value: https://api.devnet.solana.com
+      - key: ESCROW_WALLET_ADDRESS
+        sync: false
+      - key: USDC_MINT_ADDRESS
+        value: EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+
