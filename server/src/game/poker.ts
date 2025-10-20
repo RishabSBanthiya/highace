@@ -1,4 +1,5 @@
-import { Hand } from 'pokersolver';
+import PokerSolver from 'pokersolver';
+const { Hand } = PokerSolver;
 import db from '../database/schema.js';
 import { GameState, PlayerAction } from '../types/index.js';
 import { createDeck, shuffleDeck, dealCards } from './deck.js';

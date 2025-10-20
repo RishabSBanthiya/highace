@@ -6,10 +6,29 @@ const connection = new Connection(
   'confirmed'
 );
 
-const ESCROW_WALLET = new PublicKey(process.env.ESCROW_WALLET_ADDRESS || '');
-const USDC_MINT = new PublicKey(
-  process.env.USDC_MINT_ADDRESS || 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-);
+// Lazy initialization to ensure env vars are loaded
+let ESCROW_WALLET: PublicKey;
+let USDC_MINT: PublicKey;
+
+function getEscrowWallet(): PublicKey {
+  if (!ESCROW_WALLET) {
+    const address = process.env.ESCROW_WALLET_ADDRESS;
+    if (!address) {
+      throw new Error('ESCROW_WALLET_ADDRESS environment variable is not set');
+    }
+    ESCROW_WALLET = new PublicKey(address);
+  }
+  return ESCROW_WALLET;
+}
+
+function getUSDCMint(): PublicKey {
+  if (!USDC_MINT) {
+    USDC_MINT = new PublicKey(
+      process.env.USDC_MINT_ADDRESS || 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+    );
+  }
+  return USDC_MINT;
+}
 
 export async function verifyBuyInTransaction(
   signature: string,
@@ -38,7 +57,7 @@ export async function verifyBuyInTransaction(
           const info = parsed.info;
           
           // Verify destination is escrow wallet
-          if (info.destination !== ESCROW_WALLET.toBase58()) {
+          if (info.destination !== getEscrowWallet().toBase58()) {
             continue;
           }
 
@@ -88,7 +107,7 @@ export async function verifyCashOutTransaction(
           const info = parsed.info;
           
           // Verify source is escrow wallet
-          if (info.source !== ESCROW_WALLET.toBase58()) {
+          if (info.source !== getEscrowWallet().toBase58()) {
             continue;
           }
 
@@ -111,11 +130,11 @@ export async function verifyCashOutTransaction(
 }
 
 export function getEscrowWalletAddress(): string {
-  return ESCROW_WALLET.toBase58();
+  return getEscrowWallet().toBase58();
 }
 
 export function getUSDCMintAddress(): string {
-  return USDC_MINT.toBase58();
+  return getUSDCMint().toBase58();
 }
 
 
