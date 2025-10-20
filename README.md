@@ -30,7 +30,7 @@ On-chain Texas Hold'em poker on Solana blockchain with Phantom wallet integratio
 ### 1. Clone and Install
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/RishabSBanthiya/highace.git
 cd highace
 npm run install:all
 ```
@@ -207,4 +207,3 @@ MIT
 ## Support
 
 For issues and questions, please open a GitHub issue.
-
