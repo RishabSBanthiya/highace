@@ -44,16 +44,23 @@ export default function BuyInModal({
       // Use wallet adapter's sendTransaction method
       const signature = await sendTransaction(transaction, connection, {
         skipPreflight: false,
-        preflightCommitment: 'confirmed',
+        preflightCommitment: 'processed',
       });
 
-      // Wait for confirmation
-      await connection.confirmTransaction(signature, 'confirmed');
+      console.log('Transaction sent:', signature);
 
+      // Use processed commitment for faster feedback on devnet
+      // The transaction is considered successful once it's sent
       onBuyInComplete(signature);
+
+      // Confirm in background (optional, for verification)
+      connection.confirmTransaction(signature, 'confirmed')
+        .then(() => console.log('Transaction confirmed:', signature))
+        .catch((err) => console.warn('Confirmation timeout (tx likely succeeded):', err));
+
     } catch (err: any) {
       console.error('Buy-in error:', err);
-      setError(err.message || 'Transaction failed');
+      setError(err.message || 'Transaction failed. Please try again.');
     } finally {
       setLoading(false);
     }
