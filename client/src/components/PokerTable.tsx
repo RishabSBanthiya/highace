@@ -39,28 +39,28 @@ export default function PokerTable({ roomId, onLeave }: PokerTableProps) {
   useEffect(() => {
     if (!connected || !publicKey) return;
 
+    console.log('[PokerTable] Attempting reconnect for room:', roomId);
     // Try to reconnect first
-    send('reconnect', { wallet_address: publicKey.toBase58() });
+    send('reconnect', { wallet_address: publicKey.toBase58(), room_id: roomId });
 
     // Set up message handlers
     on('reconnect_success', (payload) => {
-      console.log('Reconnected to room:', payload);
+      console.log('[PokerTable] Reconnected to room:', payload);
     });
 
     on('reconnect_failed', () => {
+      console.log('[PokerTable] Reconnect failed, showing buy-in modal');
       // Not reconnecting, show buy-in modal
       setShowBuyIn(true);
     });
 
     on('room_state', (payload) => {
+      console.log('[PokerTable] Received room state:', payload);
       setRoomState(payload);
     });
 
-    on('join_success', () => {
-      setShowBuyIn(true);
-    });
-
     on('buy_in_success', () => {
+      console.log('[PokerTable] Buy-in successful, hiding modal');
       setShowBuyIn(false);
     });
 
@@ -133,7 +133,14 @@ export default function PokerTable({ roomId, onLeave }: PokerTableProps) {
     );
   }
 
-  if (showBuyIn && escrowWallet && usdcMint) {
+  if (showBuyIn) {
+    if (!escrowWallet || !usdcMint) {
+      return (
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-xl">Loading configuration...</div>
+        </div>
+      );
+    }
     return (
       <BuyInModal
         roomId={roomId}
